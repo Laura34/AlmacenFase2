@@ -1,7 +1,6 @@
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.logging.Level;
@@ -26,15 +25,6 @@ public class Inicio extends javax.swing.JFrame {
         initComponents();
     }
     public String BuscarInfo1(short tamanioA, RandomAccessFile a, String tipo){
-
-    /**
-     *
-     * @param tamanioA
-     * @param a
-     * @param tipo
-     * @return
-     */
-    public String BuscarInfo2(short tamanioA, RandomAccessFile a, String tipo){
         String etiqueta="";
         try {
             boolean info=false;
@@ -69,6 +59,45 @@ public class Inicio extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return etiqueta;
+    }
+    
+    public String BuscarInfo2(short tamanioA, RandomAccessFile a, String tipo){
+        String etiqueta="";
+        try {
+            boolean info=false;
+            for(int i=0; i<tamanioA;i++){
+                if(!etiqueta.contains("COMM")){
+                    etiqueta=etiqueta+ (char)a.readByte();
+                }
+                else{
+                    info=true;
+                    break;
+                }
+            }
+            if(info){
+                int tamanioDato=0;
+                for(int i=0; i<4;i++){
+                    tamanioDato=tamanioDato + a.readByte();
+                }
+                byte margen=0;
+                for(int i=0; i<2;i++){
+                    margen=(byte) (margen + a.readByte());
+                }
+                if(margen==0){
+                    etiqueta="";
+                    for(int i=0; i<tamanioDato;i++){
+                        etiqueta=etiqueta + (char)a.readByte();
+                    }
+                }
+            }
+            else{
+                etiqueta="-------";
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return etiqueta;
     }
     /**
@@ -186,69 +215,6 @@ public class Inicio extends javax.swing.JFrame {
                         etiqueta="Album:   " + BuscarInfo1(tamanioA, a, "TALB");
                         etiqueta="Cantante:   " + BuscarInfo1(tamanioA, a, "TPE1");
                         etiqueta="Año:   " + BuscarInfo1(tamanioA, a, "TYER");
-//                        ////////////////////TITULO////////////////////
-//                        etiqueta="";
-//                        boolean info=false;
-//                        for(int i=0; i<tamanioA;i++){
-//                            if(!etiqueta.contains("TIT2")){
-//                                etiqueta=etiqueta+ (char)a.readByte();
-//                            }
-//                            else{
-//                                info=true;
-//                                break;
-//                            }
-//                        }
-//                        if(info){
-//                            int tamanioDato=0;
-//                            for(int i=0; i<4;i++){
-//                                tamanioDato=tamanioDato + a.readByte();
-//                            }
-//                            byte margen=0;
-//                            for(int i=0; i<2;i++){
-//                                margen=(byte) (margen + a.readByte());
-//                            }
-//                            if(margen==0){
-//                                etiqueta="";
-//                                for(int i=0; i<tamanioDato;i++){
-//                                    etiqueta=etiqueta + (char)a.readByte();
-//                                }
-//                            }
-//                        }
-//                        else{
-//                             etiqueta="No hay titulo";
-//                        }
-//                        ////////////////////ALBUM////////////////////
-//                        etiqueta="";
-//                        a.seek(10);
-//                        info=false;
-//                        for(int i=0; i<tamanioA;i++){
-//                            if(!etiqueta.contains("TALB")){
-//                                etiqueta=etiqueta+ (char)a.readByte();
-//                            }
-//                            else{
-//                                info=true;
-//                                break;
-//                            }
-//                        }
-//                        if(info){
-//                            int tamanioDato=0;
-//                            for(int i=0; i<4;i++){
-//                                tamanioDato=tamanioDato + a.readByte();
-//                            }
-//                            byte margen=0;
-//                            for(int i=0; i<2;i++){
-//                                margen=(byte) (margen + a.readByte());
-//                            }
-//                            if(margen==0){
-//                                etiqueta="";
-//                                for(int i=0; i<tamanioDato;i++){
-//                                    etiqueta=etiqueta + (char)a.readByte();
-//                                }
-//                            }
-//                        }
-//                        else{
-//                             etiqueta="No hay album";
-//                        }
                     }
                 }
                 jTextField1.setText(etiqueta);
