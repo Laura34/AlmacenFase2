@@ -28,6 +28,7 @@ public class Inicio extends javax.swing.JFrame {
         String etiqueta="";
         try {
             boolean info=false;
+            a.seek(10);
             for(int i=0; i<tamanioA;i++){
                 if(!etiqueta.contains(tipo)){
                     etiqueta=etiqueta+ (char)a.readByte();
@@ -62,13 +63,14 @@ public class Inicio extends javax.swing.JFrame {
         return etiqueta;
     }
     
-    public String BuscarInfo2(short tamanioA, RandomAccessFile a, String tipo){
-        String etiqueta="";
+    public String BuscarInfo2(short tamanioA, RandomAccessFile a){
+        String etiqueta="";        
         try {
             boolean info=false;
+            a.seek(10);
             for(int i=0; i<tamanioA;i++){
                 if(!etiqueta.contains("COMM")){
-                    etiqueta=etiqueta+ (char)a.readByte();
+                    etiqueta=etiqueta + (char)a.readByte();
                 }
                 else{
                     info=true;
@@ -85,8 +87,9 @@ public class Inicio extends javax.swing.JFrame {
                     margen=(byte) (margen + a.readByte());
                 }
                 if(margen==0){
+                    a.skipBytes(5);
                     etiqueta="";
-                    for(int i=0; i<tamanioDato;i++){
+                    for(int i=0; i<tamanioDato-5;i++){
                         etiqueta=etiqueta + (char)a.readByte();
                     }
                 }
@@ -97,7 +100,6 @@ public class Inicio extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
         return etiqueta;
     }
     /**
@@ -110,8 +112,8 @@ public class Inicio extends javax.swing.JFrame {
     private void initComponents() {
 
         jFileChooser1 = new javax.swing.JFileChooser();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -122,17 +124,9 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,27 +135,17 @@ public class Inicio extends javax.swing.JFrame {
             .addComponent(jFileChooser1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTextField1)
+                .addComponent(jScrollPane1)
                 .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jTextField2)
-                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jFileChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(377, Short.MAX_VALUE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(116, 116, 116)))
         );
 
         pack();
@@ -171,7 +155,7 @@ public class Inicio extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             FileInputStream archivo = new FileInputStream(jFileChooser1.getSelectedFile().getPath());
-            RandomAccessFile a = new RandomAccessFile("agenda.dat", "rw");
+            RandomAccessFile a = new RandomAccessFile("auxiliar.dat", "rw");
             for(int i=0;i<3;i++){
                 a.write(archivo.read());
             }
@@ -211,16 +195,23 @@ public class Inicio extends javax.swing.JFrame {
                                 tamanioA = (short) (tamanioA + Math.pow(2, i));
                             }
                         }
+                        jTextArea1.removeAll();
                         etiqueta="Titulo:   " + BuscarInfo1(tamanioA, a, "TIT2");
+                        jTextArea1.append(etiqueta);
                         etiqueta="Album:   " + BuscarInfo1(tamanioA, a, "TALB");
+                        jTextArea1.append(etiqueta);
                         etiqueta="Cantante:   " + BuscarInfo1(tamanioA, a, "TPE1");
+                        jTextArea1.append(etiqueta);
                         etiqueta="Año:   " + BuscarInfo1(tamanioA, a, "TYER");
+                        jTextArea1.append(etiqueta);
+                        etiqueta="Info:   " + BuscarInfo2(tamanioA, a);
+                        jTextArea1.append(etiqueta);
                     }
                 }
-                jTextField1.setText(etiqueta);
             }
             else{
-                jTextField1.setText("No es un archivo mp3");
+                jTextArea1.removeAll();
+                jTextArea1.setText("No es un archivo mp3");
             }
             archivo.close();
             
@@ -230,14 +221,6 @@ public class Inicio extends javax.swing.JFrame {
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jFileChooser1ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -273,10 +256,9 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser jFileChooser1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }
