@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -118,113 +119,127 @@ public class Lector extends javax.swing.JFrame {
     }
     
     public void Escribir(Cancion cancion) throws IOException{
-        File almacen = new File("Almacen.data");
-        if(!almacen.exists()){
-            try {
-                RandomAccessFile ind = new RandomAccessFile("Indice.data", "rw");
-                ind.writeBytes("INDX");     //Identificador
-                short puntero;
-                short aux=(short) (22+cancion.getArtista().length());//Puntero hasta la pista
-                puntero = 10;  //Puntero de la seccion
-                ind.writeShort(puntero);    //Escribe el puntero hacia el inicio de la sección artistas
-                short anio=(short) ind.length();    //Almacena el puntero para el registro final
-                ind.writeShort(cancion.getAnio());//Escribe el año
-                ind.writeShort(aux);    //Escribe el puntero hasta la pista
-                puntero=(short) (puntero+8+cancion.getArtista().length());    //Escribe el puntero hacia el inicio de la sección pistas
-                ind.writeShort(puntero);//Escribe el puntero al final de la sección de la inicial de las pistas
-                ind.writeBytes(cancion.getArtista().charAt(0)+"");  //Escribe la inicial de la sección
-                ind.writeShort(puntero);    //Escribe el puntero a la siguiente letra
-                short artista=(short) ind.length();
-                ind.writeByte(cancion.getArtista().length());   //Escribe el tamaño del nombre
-                ind.writeBytes(cancion.getArtista());   //Escribe el nombre del artista
-                ind.writeShort(aux);    //Escribe el puntero hacia la pista
-                puntero=(short) (puntero+8+cancion.getPista().length());    //Obtiene el puntero al final de la sección
-                ind.writeBytes(cancion.getPista().charAt(0)+"");    //Escribe la inicial de la pista para la sección
-                ind.writeShort(puntero);    //Escribe el puntero al final de la sección
-                short pista=(short) ind.length();   
-                ind.writeByte(cancion.getPista().length()); //Escribe la longitud de la pista
-                ind.writeBytes(cancion.getPista()); //Escribe la pista
-                int p;
-                /*ESCRITURA DEL ALMACEN*/
-                RandomAccessFile alm = new RandomAccessFile("Almacen.data", "rw");
-                alm.writeBytes("ALMA"); //Escribe el identificador del archivo
-                p = 9+cancion.getDireccion().length();
-                alm.writeInt(p);  //Escribe el puntero al final de la sección
-                int direccion=(int) alm.length();
-                alm.writeByte(cancion.getDireccion().length());
-                alm.writeBytes(cancion.getDireccion());
-                p = p+5+cancion.getGenero().length();
-                alm.writeInt(p);
-                int genero=(int) alm.length();
-                alm.writeByte(cancion.getGenero().length());
-                alm.writeBytes(cancion.getGenero());
-                p = p+5+cancion.getDisquera().length();
-                alm.writeInt(p);
-                int disquera=(int) alm.length();
-                alm.writeByte(cancion.getDisquera().length());
-                alm.writeBytes(cancion.getDisquera());
-                p=p+5+cancion.getAlbum().length();
-                alm.writeInt(p);
-                int album=(int) alm.length();
-                alm.writeByte(cancion.getAlbum().length());
-                alm.writeBytes(cancion.getAlbum());
-                int enlace = p;
-                alm.writeInt(0);
-                p = p+9+cancion.getEnlaceArtista().length();
-                alm.writeInt(p);
-                int enlaceA=(int) alm.length();
-                alm.writeByte(cancion.getEnlaceArtista().length());
-                alm.writeBytes(cancion.getEnlaceArtista());
-                p = p+5+cancion.getEnlaceDisquera().length();
-                alm.writeInt(p);
-                int enlaceD=(int) alm.length();
-                alm.writeByte(cancion.getEnlaceDisquera().length());
-                alm.writeBytes(cancion.getEnlaceDisquera());
-                p = p+5+cancion.getEnlaceOtros().length();
-                alm.writeInt(p);
-                int enlaceO=(int) alm.length();
-                alm.writeByte(cancion.getEnlaceOtros().length());
-                alm.writeBytes(cancion.getEnlaceOtros());
-                alm.seek(enlace);
-                alm.writeInt(p);
-                alm.seek(p);
-                /*Registro*/
-                ind.writeInt(p);    //Escribe el puntero hacia el registro
-                ind.writeInt(0);    //Indica el final del archivo
-                p=p+52;
-                /*Almacenar los punteros en variables y escribir aqui*/
-                alm.writeInt(p);
-                alm.writeInt(p);
-                alm.writeShort(pista);
-                alm.writeInt(disquera);
-                alm.writeShort(artista);
-                alm.writeInt(album);
-                alm.writeShort(anio);
-                alm.writeInt(genero);
-                alm.writeInt(direccion);
-                alm.writeShort(cancion.getDuracion());
-                alm.writeInt(enlaceA);
-                alm.writeInt(enlaceD);
-                alm.writeInt(enlaceO);
-                RandomAccessFile info = new RandomAccessFile("Informacion.data", "rw");
-                RandomAccessFile letra = new RandomAccessFile("Letras.data", "rw");
-                info.writeBytes("INFO");
-                alm.writeInt((int) info.length());
-                info.writeInt(cancion.getInfo().length());
-                info.writeBytes(cancion.getInfo());
-                letra.writeBytes("LETR");
-                alm.writeInt((int) letra.length());
-                letra.writeInt(cancion.getLetra().length());
-                alm.writeInt(0);
-                letra.writeBytes(cancion.getLetra());
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(Lector.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(Lector.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        File archivo = new File("Almacen.data");
+        int puntero=4;
+        short punteroI=4;
+        short anio;
+        short artista;
+        short pista;
+        int direccion;
+        int genero;
+        int disquera;
+        int album;
+        int enlaceA;
+        int enlaceD;
+        int enlaceO;
+        if(!archivo.exists()){  //Si es el primer registro
+            RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
+            RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
+            RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
+            RandomAccessFile letra = new RandomAccessFile("Letras.data","rw");
+            /*Escribe el Almacen*/
+            /*DIRECCION*/
+            almacen.writeBytes("ALMA");
+            puntero=puntero+5+cancion.getDireccion().length();  //Puntero al final de la seccion
+            almacen.writeInt(puntero);
+            direccion=(int) almacen.length();
+            almacen.writeByte(cancion.getDireccion().length());
+            almacen.writeBytes(cancion.getDireccion());
+            /*GÉNERO*/
+            puntero=puntero+5+cancion.getGenero().length();
+            almacen.writeInt(puntero);
+            genero=(int) almacen.length();
+            almacen.writeByte(cancion.getGenero().length());
+            almacen.writeBytes(cancion.getGenero());
+            /*DISQUERA*/
+            puntero=puntero+5+cancion.getDisquera().length();
+            almacen.writeInt(puntero);
+            disquera=(int) almacen.length();
+            almacen.writeByte(cancion.getDisquera().length());
+            almacen.writeBytes(cancion.getDisquera());
+            /*ÁLBUM*/
+            puntero=puntero+5+cancion.getAlbum().length();
+            almacen.writeInt(puntero);
+            album=(int) almacen.length();
+            almacen.writeByte(cancion.getAlbum().length());
+            almacen.writeBytes(cancion.getAlbum());
+            /*ENLACE DE ARTISTA*/
+            int aux=puntero;
+            almacen.writeInt(0);
+            puntero=puntero+9+cancion.getEnlaceArtista().length();
+            almacen.writeInt(puntero);
+            enlaceA=(int) almacen.length();
+            almacen.writeByte(cancion.getEnlaceArtista().length());
+            almacen.writeBytes(cancion.getEnlaceArtista());
+            /*ENLACE DE DISQUERA*/
+            puntero=puntero+5+cancion.getEnlaceDisquera().length();
+            almacen.writeInt(puntero);
+            enlaceD=(int) almacen.length();
+            almacen.writeByte(cancion.getEnlaceDisquera().length());
+            almacen.writeBytes(cancion.getEnlaceDisquera());
+            /*ENLACE DE OTROS*/
+            puntero=puntero+5+cancion.getEnlaceOtros().length();
+            almacen.writeInt(puntero);
+            enlaceO=(int) almacen.length();
+            almacen.writeByte(cancion.getEnlaceOtros().length());
+            almacen.writeBytes(cancion.getEnlaceOtros());
+            almacen.seek(aux);
+            almacen.writeInt(puntero);
+            almacen.seek(puntero);
+            
+            /*INDICE*/
+            indice.writeBytes("INDX");
+            /*Años*/
+            punteroI+=8;
+            indice.writeShort(6006);    //Puntero al final del Bloque
+            indice.writeShort(punteroI);
+            anio=(short) indice.length();
+            indice.writeShort(cancion.getAnio());
+            indice.writeShort(25089+3); //Puntero a la pista
+            /*Artistas*/
+            indice.seek(6006);  //Va al siguiente bloque
+            indice.writeShort(25089);   //Puntero al siguiente bloque
+            indice.writeBytes(cancion.getArtista().charAt(0)+"");   //Identificador de la sección
+            indice.writeShort(6006+8+cancion.getArtista().length());    //Longitud de la sección
+            artista=(short) indice.length();    //Puntero al artista para el registro
+            indice.writeByte(cancion.getArtista().length());    //Longitud de la cadena
+            indice.writeBytes(cancion.getArtista());    //Artista
+            indice.writeShort(25089+3); //Puntero a la pista
+            /*Pistas*/
+            indice.seek(25089);
+            indice.writeBytes(cancion.getPista().charAt(0)+"");
+            indice.writeShort(25089+8+cancion.getPista().length());
+            pista=(short) indice.length();
+            indice.writeByte(cancion.getPista().length());
+            indice.writeBytes(cancion.getPista());
+            indice.writeShort(puntero+8);   //Guarda el puntero al inicio del registro
+            /*REGISTRO*/
+            almacen.writeInt(puntero+52);
+            almacen.writeInt(puntero+52);
+            almacen.writeShort(pista);
+            almacen.writeInt(disquera);
+            almacen.writeShort(artista);
+            almacen.writeInt(album);
+            almacen.writeShort(anio);
+            almacen.writeInt(genero);
+            almacen.writeInt(direccion);
+            almacen.writeShort(cancion.getDuracion());
+            almacen.writeInt(enlaceA);
+            almacen.writeInt(enlaceD);
+            almacen.writeInt(enlaceO);
+            /*INFORMACIÓN Y LETRAS*/
+            informacion.writeBytes("INFO");
+            almacen.writeInt((int) informacion.length());
+            informacion.writeInt(cancion.getInfo().length());
+            informacion.writeBytes(cancion.getInfo());
+            informacion.writeBytes("LETR");
+            almacen.writeInt((int) letra.length());
+            letra.writeInt(cancion.getLetra().length());
+            almacen.writeInt(0);
+            letra.writeBytes(cancion.getLetra());
         }
         else{
-            /*Agregar Datos al registro verificando si hay datos repetidos o si debe agregar punteros*/
+            
         }
     }
     
@@ -390,7 +405,7 @@ public class Lector extends javax.swing.JFrame {
     }//GEN-LAST:event_jFileChooser1ActionPerformed
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.setVisible(false);
-        if(!canciones.isEmpty()){
+        if(canciones.isEmpty()){
             try {
                 for(int i=0; i<canciones.size();i++){
                     Escribir(canciones.get(0));
