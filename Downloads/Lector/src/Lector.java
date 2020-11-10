@@ -127,367 +127,203 @@ public class Lector extends javax.swing.JFrame {
         File archivo = new File("Almacen.data");
         int puntero1=4;
         short puntero2=4;
-        short anio;
-        short artista;
-        int pista;
-        int direccion=-1;
+        short anio=0;
+        short artista=0;
+        int pista = 0;
+        int direccion=0;
         int genero = 0;
         int disquera = 0;
         int album = 0;
         int enlaceA = 0;
         int enlaceD = 0;
         int enlaceO = 0;
+        int infor=0;
+        int let=0;
         if(!archivo.exists()){  //Si es el primer registro
             RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
             RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
             RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
             RandomAccessFile letra = new RandomAccessFile("Letras.data","rw");
-            /*Escribe el Almacen*/
-            /*DIRECCION*/
             almacen.writeBytes("ALMA");
-            almacen.writeInt(101008);   //Puntero al final de la seccion
-            direccion=(int) almacen.length();
-            almacen.writeByte(cancion.getDireccion().length());
-            almacen.writeBytes(cancion.getDireccion());
-            /*GÉNERO*/
-            almacen.seek(101008);
-            almacen.writeInt(122012);
-            genero=(int) almacen.length();
-            almacen.writeByte(cancion.getGenero().length());
-            almacen.writeBytes(cancion.getGenero());
-            /*DISQUERA*/
-            almacen.seek(122012);
-            almacen.writeInt(143016);
-            disquera=(int) almacen.length();
-            almacen.writeByte(cancion.getDisquera().length());
-            almacen.writeBytes(cancion.getDisquera());
-            /*ÁLBUM*/
-            almacen.seek(143016);
-            almacen.writeInt(164020);
-            album=(int) almacen.length();
-            almacen.writeByte(cancion.getAlbum().length());
-            almacen.writeBytes(cancion.getAlbum());
-            /*ENLACE DE ARTISTA*/
-            almacen.seek(164020);
-            almacen.writeInt(317036);
-            almacen.writeInt(215028);
-            enlaceA=(int) almacen.length();
-            almacen.writeByte(cancion.getEnlaceArtista().length());
-            almacen.writeBytes(cancion.getEnlaceArtista());
-            /*ENLACE DE DISQUERA*/
-            almacen.seek(215028);
-            almacen.writeInt(266032);
-            enlaceD=(int) almacen.length();
-            almacen.writeByte(cancion.getEnlaceDisquera().length());
-            almacen.writeBytes(cancion.getEnlaceDisquera());
-            /*ENLACE DE OTROS*/
-            almacen.seek(266032);
-            almacen.writeInt(317036);
-            enlaceO=(int) almacen.length();
-            almacen.writeByte(cancion.getEnlaceOtros().length());
-            almacen.writeBytes(cancion.getEnlaceOtros());
-            /*INDICE*/
             indice.writeBytes("INDX");
-            /*Años*/
-            indice.writeShort(14);    //Puntero al final del Bloque
-            indice.writeShort(1);   //Cantidad de registros
-            anio=(short) indice.length();
-            indice.writeShort(cancion.getAnio());
-            indice.writeInt(30012); //Puntero a la pista
-            /*Artistas*/
-            indice.seek(8006);  //Va al siguiente bloque
-            indice.writeShort(8008+7+cancion.getArtista().length());   //Puntero al final del Bloque
-            indice.writeShort(1);   //Cantidad de registros
-            artista=(short) indice.length();    //Puntero al artista para el registro
-            indice.writeByte(cancion.getArtista().length());    //Longitud de la cadena
-            indice.writeBytes(cancion.getArtista());    //Artista
-            indice.writeInt(30012); //Puntero a la pista
-            /*Pistas*/
-            indice.seek(30008);
-            indice.writeInt(30012+1+cancion.getPista().length()+4);
-            pista = (int) indice.length();
-            indice.writeByte(cancion.getPista().length());
-            indice.writeBytes(cancion.getPista());
-            indice.writeInt(317040+4);   //Guarda el puntero al inicio del registro
-            /*REGISTRO*/
-            almacen.seek(317036);
-            almacen.writeInt(317036+52);
-            almacen.writeInt(317036+52);
-            almacen.writeShort(pista);
-            almacen.writeInt(disquera);
-            almacen.writeShort(artista);
-            almacen.writeInt(album);
-            almacen.writeShort(anio);
-            almacen.writeInt(genero);
-            almacen.writeInt(direccion);
-            almacen.writeShort(cancion.getDuracion());
-            almacen.writeInt(enlaceA);
-            almacen.writeInt(enlaceD);
-            almacen.writeInt(enlaceO);
-            /*INFORMACIÓN Y LETRAS*/
             informacion.writeBytes("INFO");
-            almacen.writeInt((int) informacion.length());
-            informacion.writeInt(cancion.getInfo().length());
-            informacion.writeBytes(cancion.getInfo());
-            informacion.writeBytes("LETR");
-            almacen.writeInt((int) letra.length());
-            almacen.writeInt(0);
-            letra.writeInt(cancion.getLetra().length());
-            letra.writeBytes(cancion.getLetra());
-        }
-        else{
-            //////////////////////////////////////////////////////////////////////////////////
-            RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
-            RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
-            RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
-            RandomAccessFile letra = new RandomAccessFile("Letras.data","rw");
-            /*Escribe el Almacen*/
-            /*DIRECCION*/
-            boolean existe=false;
-            int posicion=8;
-            almacen.seek(posicion);
-            String dato="";
-            byte tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getDireccion().equals(dato)){
-                    existe=true;
-                    direccion=posicion;
-                }
-                else{
-                    dato="";
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                direccion=posicion;
-                almacen.writeByte(cancion.getDireccion().length());
-                almacen.writeBytes(cancion.getDireccion());
-            }
-            /*Género*/
-            existe=false;
-            posicion=101012;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getGenero().equals(dato)){
-                    dato="";
-                    existe=true;
-                    genero=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                genero=posicion;
-                almacen.writeByte(cancion.getGenero().length());
-                almacen.writeBytes(cancion.getGenero());
-            }
-            /*Disquera*/
-            existe=false;
-            posicion=122016;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getDisquera().equals(dato)){
-                    dato="";
-                    existe=true;
-                    disquera=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                disquera=posicion;
-                almacen.writeByte(cancion.getDisquera().length());
-                almacen.writeBytes(cancion.getDisquera());
-            }
-            /*Álbum*/
-            existe=false;
-            posicion=143020;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getAlbum().equals(dato)){
-                    dato="";
-                    existe=true;
-                    album=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                album=posicion;
-                almacen.writeByte(cancion.getAlbum().length());
-                almacen.writeBytes(cancion.getAlbum());
-            }
-            /*EnlaceA*/
-            existe=false;
-            posicion=164028;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getEnlaceArtista().equals(dato)){
-                    dato="";
-                    existe=true;
-                    enlaceA=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                enlaceA=posicion;
-                almacen.writeByte(cancion.getEnlaceArtista().length());
-                almacen.writeBytes(cancion.getEnlaceArtista());
-            }
-            /*EnlaceD*/
-            existe=false;
-            posicion=215032;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getEnlaceDisquera().equals(dato)){
-                    dato="";
-                    existe=true;
-                    enlaceD=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                enlaceD=posicion;
-                almacen.writeByte(cancion.getEnlaceDisquera().length());
-                almacen.writeBytes(cancion.getEnlaceDisquera());
-            }
-            /*EnlaceO*/
-            existe=false;
-            posicion=266036;
-            almacen.seek(posicion);
-            dato="";
-            tamanio=almacen.readByte();
-            while(tamanio!=0){
-                for(int i=0; i<tamanio; i++){
-                    dato=dato+(char) almacen.readByte();
-                }
-                if(cancion.getEnlaceOtros().equals(dato)){
-                    dato="";
-                    existe=true;
-                    enlaceO=posicion;
-                }
-                else{
-                    posicion=posicion+1+tamanio;
-                    tamanio=almacen.readByte();
-                }
-            }
-            if(!existe){
-                almacen.seek(posicion);
-                enlaceO=posicion;
-                almacen.writeByte(cancion.getEnlaceOtros().length());
-                almacen.writeBytes(cancion.getEnlaceOtros());
-            }
-            /*INDICE*/
-            /*AÑOS*/
-            puntero2=4;
-            indice.seek(puntero2);
-            short tamanioReg=indice.readShort();
-            indice.seek(puntero2);
-            puntero2=indice.readShort();
-            indice.seek(puntero2);
-            indice.writeShort(1);
-            anio=(short) (puntero2+1);
-            indice.writeShort(cancion.getAnio());
-            indice.writeInt((int) indice.length());
+            letra.writeBytes("LTRA");
             indice.seek(4);
-            indice.writeShort(tamanioReg+8);
-            /*Artistas*/
-            puntero2=8006;
-            indice.seek(puntero2);
-            tamanioReg=indice.readShort();
-            indice.seek(puntero2);
-            puntero2=indice.readShort();
-            indice.seek(puntero2);
-            indice.writeShort(1);
-            artista=(short) (puntero2+1);
-            indice.writeByte(cancion.getArtista().length());
-            indice.writeBytes(cancion.getArtista());
-            indice.writeInt((int) indice.length());
-            indice.seek(8006);
-            indice.writeShort(tamanioReg+cancion.getArtista().length()+7);
-            /*Pistas*/
-            puntero1=30008;
-            pista=(int) indice.length();
-            indice.seek(puntero1);
-            int tamanioPistas=indice.readInt();
-            indice.seek(puntero1);
-            puntero1=indice.readInt();
-            indice.seek(puntero1);
-            indice.writeByte(cancion.getPista().length());
-            indice.writeBytes(cancion.getPista());
-            indice.writeInt((int) almacen.length());
-            almacen.seek(almacen.length()-4);
-            almacen.writeInt((int) (almacen.length()-4+52));
-            almacen.writeShort(pista);
-            almacen.writeInt(disquera);
-            almacen.writeShort(artista);
-            almacen.writeInt(album);
-            almacen.writeShort(anio);
-            almacen.writeInt(genero);
-            almacen.writeInt(direccion);
-            almacen.writeShort(cancion.getDuracion());
-            almacen.writeInt(enlaceA);
-            almacen.writeInt(enlaceD);
-            almacen.writeInt(enlaceO);
-            /*INFORMACIÓN Y LETRAS*/
-            informacion.seek(informacion.length());
-            almacen.writeInt((int) informacion.length());
-            informacion.writeInt(cancion.getInfo().length());
-            informacion.writeBytes(cancion.getInfo());
-            almacen.writeInt((int) letra.length());
-            almacen.writeInt(0);
-            letra.writeInt(cancion.getLetra().length());
-            letra.writeBytes(cancion.getLetra());
-            indice.seek(30008);
-            indice.writeInt((int) indice.length());
+            indice.writeShort(6);
+            indice.seek(6006);
+            indice.writeShort(6008);
+            indice.seek(26008);
+            indice.writeInt(26012);
+            almacen.seek(4);
+            almacen.writeInt(8);
+            almacen.seek(101008);
+            almacen.writeInt(101012);
+            almacen.seek(202012);
+            almacen.writeInt(202016);
+            almacen.seek(223016);
+            almacen.writeInt(223020);
+            almacen.seek(244020);
+            almacen.writeInt(244024);
+            almacen.seek(295024);
+            almacen.writeInt(295028);
+            almacen.seek(346028);
+            almacen.writeInt(346032);
+            almacen.seek(397032);
+            almacen.writeInt(397036);
+            informacion.seek(4);
+            informacion.writeInt(8);
+            letra.seek(4);
+            letra.writeInt(8);
         }
+        RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
+        RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
+        RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
+        RandomAccessFile letra = new RandomAccessFile("Letras.data","rw");
+        int tamanio1;
+        short tamanio2;
+        /*Año*/
+        indice.seek(4);
+        tamanio2=indice.readShort();
+        anio=tamanio2;
+        indice.seek(tamanio2);
+        indice.writeShort(cancion.getAnio());
+        indice.writeInt((int) indice.length());
+        indice.seek(4);
+        indice.writeShort(tamanio2+6);
+            
+        /*Artista*/
+        indice.seek(6006);
+        tamanio2=indice.readShort();
+        artista=tamanio2;
+        indice.seek(tamanio2);
+        indice.writeByte(cancion.getArtista().length());
+        indice.writeBytes(cancion.getArtista());
+        indice.writeInt((int) indice.length());
+        indice.seek(6006);
+        indice.writeShort(tamanio2+5+cancion.getArtista().length());
+            
+        /*Pista*/
+        indice.seek(26008);
+        tamanio1=indice.readInt();
+        pista=tamanio1;
+        indice.seek(tamanio1);
+        indice.writeByte(cancion.getPista().length());
+        indice.writeBytes(cancion.getPista());
+        indice.writeInt((int) almacen.length());
+        indice.seek(26008);
+        indice.writeInt(tamanio1+5+cancion.getPista().length());
+            
+        /*Ruta*/
+        almacen.seek(4);
+        tamanio1=almacen.readInt();
+        direccion=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getDireccion().length());
+        almacen.writeBytes(cancion.getDireccion());
+        almacen.seek(4);
+        almacen.writeInt(tamanio1+1+cancion.getDireccion().length());
+                
+        /*Genero*/
+        almacen.seek(101008);
+        tamanio1=almacen.readInt();
+        genero=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getGenero().length());
+        almacen.writeBytes(cancion.getGenero());
+        almacen.seek(101008);
+        almacen.writeInt(tamanio1+1+cancion.getGenero().length());
+
+        /*Disquera*/
+        almacen.seek(202012);
+        tamanio1=almacen.readInt();
+        disquera=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getDisquera().length());
+        almacen.writeBytes(cancion.getDisquera());
+        almacen.seek(202012);
+        almacen.writeInt(tamanio1+1+cancion.getDisquera().length());
+                
+        /*Album*/
+        almacen.seek(223016);
+        tamanio1=almacen.readInt();
+        album=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getAlbum().length());
+        almacen.writeBytes(cancion.getAlbum());
+        almacen.seek(223016);
+        almacen.writeInt(tamanio1+1+cancion.getAlbum().length());
+        
+        /*Enlace Artista*/
+        almacen.seek(244020);
+        tamanio1=almacen.readInt();
+        enlaceA=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getEnlaceArtista().length());
+        almacen.writeBytes(cancion.getEnlaceArtista());
+        almacen.seek(244020);
+        almacen.writeInt(tamanio1+1+cancion.getEnlaceArtista().length());
+        
+        /*Enlace Disquera*/
+        almacen.seek(295024);
+        tamanio1=almacen.readInt();
+        enlaceD=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getEnlaceDisquera().length());
+        almacen.writeBytes(cancion.getEnlaceDisquera());
+        almacen.seek(295024);
+        almacen.writeInt(tamanio1+1+cancion.getEnlaceDisquera().length());
+        
+        /*Enlace Otros*/
+        almacen.seek(346028);
+        tamanio1=almacen.readInt();
+        enlaceO=tamanio1;
+        almacen.seek(tamanio1);
+        almacen.writeByte(cancion.getEnlaceOtros().length());
+        almacen.writeBytes(cancion.getEnlaceOtros());
+        almacen.seek(346028);
+        almacen.writeInt(tamanio1+1+cancion.getEnlaceOtros().length());
+        
+        /*Informacion*/
+        informacion.seek(4);
+        tamanio1=informacion.readInt();
+        infor=tamanio1;
+        informacion.seek(tamanio1);
+        informacion.writeInt(cancion.getInfo().length());
+        informacion.writeBytes(cancion.getInfo());
+        informacion.seek(4);
+        informacion.writeInt(tamanio1+4+cancion.getInfo().length());
+        
+        /*Letra*/
+        letra.seek(4);
+        tamanio1=letra.readInt();
+        let=tamanio1;
+        letra.seek(tamanio1);
+        letra.writeInt(cancion.getLetra().length());
+        letra.writeBytes(cancion.getLetra());
+        letra.seek(4);
+        letra.writeInt(tamanio1+4+cancion.getLetra().length());
+        
+        /*Registro*/
+        almacen.seek(397032);
+        tamanio1=almacen.readInt();
+        almacen.seek(tamanio1);
+        almacen.writeShort(pista);
+        almacen.writeInt(disquera);
+        almacen.writeShort(artista);
+        almacen.writeInt(album);
+        almacen.writeShort(anio);
+        almacen.writeInt(genero);
+        almacen.writeInt(direccion);
+        almacen.writeShort(cancion.getDuracion());
+        almacen.writeInt(enlaceA);
+        almacen.writeInt(enlaceD);
+        almacen.writeInt(enlaceO);
+        almacen.writeInt(infor);
+        almacen.writeInt(let);
+        almacen.seek(397032);
+        almacen.writeInt(tamanio1+44);
+        
+        
     }
     
     public void Leer(String ruta,Cancion nuevo){
@@ -654,24 +490,9 @@ public class Lector extends javax.swing.JFrame {
         this.setVisible(false);
         if(!canciones.isEmpty()){
             try {
-                Cancion aux=new Cancion();
-                aux.setPista("pista 1");
-                aux.setDisquera("disquera 1");
-                aux.setArtista("artista 1");
-                aux.setAlbum("album 1");
-                aux.setAnio((short)2000);
-                aux.setGenero("genero 1");
-                aux.setDireccion("direccion 1");
-                aux.setDuracion((short)240);
-                aux.setLetra("letra 1");
-                aux.setEnlaceArtista("artista1.com");
-                aux.setEnlaceDisquera("disquera1.com");
-                aux.setEnlaceOtros("otros.com");
-                aux.setInfo("info 1");
-                Escribir(aux);
-//                for(int i=0; i<canciones.size();i++){
-//                    Escribir(canciones.get(i));
-//              }
+                for(int i=0; i<canciones.size();i++){
+                    Escribir(canciones.get(i));
+              }
             } catch (IOException ex) {
                 Logger.getLogger(Lector.class.getName()).log(Level.SEVERE, null, ex);
             }

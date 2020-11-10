@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -33,93 +34,178 @@ public class Mostrar extends javax.swing.JFrame {
         agregar();
     }
     public void agregar(){
-        leer(4);
+        leer();
         for(int i=0; i<canciones.size(); i++){
             tabla.addRow(new Object[]{canciones.get(i).getArtista(),canciones.get(i).getAlbum(), canciones.get(i).getPista()});
         }
         jTable1.setModel(tabla);
     }
 
-    public String leerDato(RandomAccessFile archivo, int puntero, boolean extra){
-        String dato="";
-        try {
-            int tamanio;
-            archivo.seek(puntero);
-            if(extra){
-                tamanio=archivo.readInt();
-            }
-            else{
-                tamanio=archivo.readByte();
-            }
-            for(int i=0; i<tamanio; i++){
-                dato=dato+(char)archivo.readByte();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Mostrar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return dato;
-    }
     
-    public void leer(int puntero){
-        //Primer puntero es 4
-        int punteroAlmacen=0;
-        int fin=0;
+    public void leer(){
         try {
-            RandomAccessFile a = new RandomAccessFile("Almacen.data", "rw");
-            RandomAccessFile indx = new RandomAccessFile("Indice.data", "rw");
-            RandomAccessFile info = new RandomAccessFile("Informacion.data", "rw");
-            RandomAccessFile letra = new RandomAccessFile("Letras.data", "rw");
-            Cancion cancion = new Cancion();
-            a.seek(puntero);
-            int punteroAuxiliar=puntero;
-            if(puntero==4){
-                for(int i=0;i<5;i++){
-                    punteroAuxiliar=a.readInt();
-                    a.seek(punteroAuxiliar);
+            RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
+            RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
+            RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
+            RandomAccessFile letra = new RandomAccessFile("Letras.data","rw");
+            almacen.seek(397032);
+            int posicion=397036;
+            int fin=almacen.readInt();
+            int puntero;
+            byte lon;
+            String dato="";
+            while(posicion!=fin){
+                Cancion nuevo =new Cancion();
+                /*Pista*/
+                almacen.seek(posicion);
+                puntero=almacen.readShort();
+                posicion+=2;
+                indice.seek(puntero);
+                lon=indice.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)indice.readByte();
                 }
-                a.skipBytes(4);
+                nuevo.setPista(dato);
+                dato="";
+                
+                /*Disquera*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setDisquera(dato);
+                dato="";
+                
+                /*Artista*/
+                almacen.seek(posicion);
+                puntero=almacen.readShort();
+                posicion+=2;
+                indice.seek(puntero);
+                lon=indice.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)indice.readByte();
+                }
+                nuevo.setArtista(dato);
+                dato="";
+                
+                /*Album*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setAlbum(dato);
+                dato="";
+                
+                /*Año*/
+                almacen.seek(posicion);
+                puntero=almacen.readShort();
+                posicion+=2;
+                indice.seek(puntero);
+                nuevo.setAnio(indice.readShort());
+                
+                /*Genero*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setGenero(dato);
+                dato="";
+                
+                /*Ruta*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setDireccion(dato);
+                dato="";
+                
+                /*Duracion*/
+                almacen.seek(posicion);
+                nuevo.setDuracion(almacen.readShort());
+                posicion+=2;
+                
+                /*Enlace Artista*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setEnlaceArtista(dato);
+                dato="";
+                
+                /*Enlace Disquera*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setEnlaceDisquera(dato);
+                dato="";
+                
+                /*Enlace Otros*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                almacen.seek(puntero);
+                lon=almacen.readByte();
+                for(int i=0; i<lon; i++){
+                    dato=dato+(char)almacen.readByte();
+                }
+                nuevo.setEnlaceOtros(dato);
+                dato="";
+                
+                /*Info*/
+                int leer;
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                informacion.seek(puntero);
+                leer=informacion.readInt();
+                for(int i=0; i<leer; i++){
+                    dato=dato+(char)informacion.readByte();
+                }
+                nuevo.setInfo(dato);
+                dato="";
+                
+                /*Letra*/
+                almacen.seek(posicion);
+                puntero=almacen.readInt();
+                posicion+=4;
+                letra.seek(puntero);
+                leer=letra.readInt();
+                for(int i=0; i<leer; i++){
+                    dato=dato+(char)letra.readByte();
+                }
+                nuevo.setLetra(dato);
+                dato="";
+                canciones.add(nuevo);
             }
-            punteroAlmacen=a.readInt();
-            cancion.setPista(leerDato(indx, a.readShort(), false));
-            cancion.setDisquera(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=14;
-            a.seek(punteroAuxiliar);
-            cancion.setArtista(leerDato(indx, a.readShort(),false));
-            cancion.setAlbum(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=6;
-            a.seek(punteroAuxiliar);
-            indx.seek(a.readShort());
-            cancion.setAnio(indx.readShort());
-            punteroAuxiliar+=2;
-            a.seek(punteroAuxiliar);
-            cancion.setGenero(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=4;
-            a.seek(punteroAuxiliar);
-            cancion.setDireccion(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=4;
-            a.seek(punteroAuxiliar);
-            cancion.setDuracion(a.readShort());
-            cancion.setEnlaceArtista(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=6;
-            a.seek(punteroAuxiliar);
-            cancion.setEnlaceDisquera(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=4;
-            a.seek(punteroAuxiliar);
-            cancion.setEnlaceOtros(leerDato(a, a.readInt(),false));
-            punteroAuxiliar+=4;
-            a.seek(punteroAuxiliar);
-            cancion.setInfo(leerDato(info, a.readInt(),true));
-            cancion.setLetra(leerDato(letra, a.readInt(),true));
-            canciones.add(cancion);
-            a.seek(punteroAlmacen);
-            fin=a.readInt();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Mostrar.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Mostrar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(fin!=0 && punteroAlmacen!=0){
-            leer(punteroAlmacen);
         }
     }
     
