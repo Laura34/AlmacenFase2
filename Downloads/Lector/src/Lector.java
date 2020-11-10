@@ -60,7 +60,7 @@ public class Lector extends javax.swing.JFrame {
                     File dir2 = new File(subruta);
                     Cancion nuevo = new Cancion();
                     nuevo.setPista(ficheros[i]);
-                    nuevo.setDireccion(subruta);
+                    nuevo.setDireccion(ruta);
                     Leer(subruta, nuevo);
                     if(dir2.isDirectory()){ //Lee las carpetas dentro de la carpeta
                         Ingresar(subruta);  //Recursividad
@@ -71,7 +71,12 @@ public class Lector extends javax.swing.JFrame {
         else{
             Cancion nuevo = new Cancion();
             nuevo.setPista(jFileChooser1.getSelectedFile().getName());
+            String aux="";
             nuevo.setDireccion(jFileChooser1.getSelectedFile().getAbsolutePath());
+            for(int i=0;i<(nuevo.getDireccion().length()-nuevo.getPista().length());i++){
+                aux=aux+nuevo.getDireccion().charAt(i);
+            }
+            nuevo.setDireccion(aux);
             Leer(jFileChooser1.getSelectedFile().getPath(),nuevo);
         }
     }
@@ -125,7 +130,7 @@ public class Lector extends javax.swing.JFrame {
         short anio;
         short artista;
         short pista;
-        int direccion;
+        int direccion=-1;
         int genero;
         int disquera;
         int album;
@@ -140,53 +145,47 @@ public class Lector extends javax.swing.JFrame {
             /*Escribe el Almacen*/
             /*DIRECCION*/
             almacen.writeBytes("ALMA");
-            puntero=puntero+5+cancion.getDireccion().length();  //Puntero al final de la seccion
-            almacen.writeInt(puntero);
+            almacen.writeInt(101008);   //Puntero al final de la seccion
             direccion=(int) almacen.length();
             almacen.writeByte(cancion.getDireccion().length());
             almacen.writeBytes(cancion.getDireccion());
             /*GÉNERO*/
-            puntero=puntero+5+cancion.getGenero().length();
-            almacen.writeInt(puntero);
+            almacen.seek(101008);
+            almacen.writeInt(122012);
             genero=(int) almacen.length();
             almacen.writeByte(cancion.getGenero().length());
             almacen.writeBytes(cancion.getGenero());
             /*DISQUERA*/
-            puntero=puntero+5+cancion.getDisquera().length();
-            almacen.writeInt(puntero);
+            almacen.seek(122012);
+            almacen.writeInt(143016);
             disquera=(int) almacen.length();
             almacen.writeByte(cancion.getDisquera().length());
             almacen.writeBytes(cancion.getDisquera());
             /*ÁLBUM*/
-            puntero=puntero+5+cancion.getAlbum().length();
-            almacen.writeInt(puntero);
+            almacen.seek(143016);
+            almacen.writeInt(164020);
             album=(int) almacen.length();
             almacen.writeByte(cancion.getAlbum().length());
             almacen.writeBytes(cancion.getAlbum());
             /*ENLACE DE ARTISTA*/
-            int aux=puntero;
-            almacen.writeInt(0);
-            puntero=puntero+9+cancion.getEnlaceArtista().length();
-            almacen.writeInt(puntero);
+            almacen.seek(164020);
+            almacen.writeInt(317036);
+            almacen.writeInt(215028);
             enlaceA=(int) almacen.length();
             almacen.writeByte(cancion.getEnlaceArtista().length());
             almacen.writeBytes(cancion.getEnlaceArtista());
             /*ENLACE DE DISQUERA*/
-            puntero=puntero+5+cancion.getEnlaceDisquera().length();
-            almacen.writeInt(puntero);
+            almacen.seek(215028);
+            almacen.writeInt(266032);
             enlaceD=(int) almacen.length();
             almacen.writeByte(cancion.getEnlaceDisquera().length());
             almacen.writeBytes(cancion.getEnlaceDisquera());
             /*ENLACE DE OTROS*/
-            puntero=puntero+5+cancion.getEnlaceOtros().length();
-            almacen.writeInt(puntero);
+            almacen.seek(266032);
+            almacen.writeInt(317036);
             enlaceO=(int) almacen.length();
             almacen.writeByte(cancion.getEnlaceOtros().length());
             almacen.writeBytes(cancion.getEnlaceOtros());
-            almacen.seek(aux);
-            almacen.writeInt(puntero);
-            almacen.seek(puntero);
-            
             /*INDICE*/
             indice.writeBytes("INDX");
             /*Años*/
@@ -214,6 +213,7 @@ public class Lector extends javax.swing.JFrame {
             indice.writeBytes(cancion.getPista());
             indice.writeShort(puntero+8);   //Guarda el puntero al inicio del registro
             /*REGISTRO*/
+            almacen.seek(317036);
             almacen.writeInt(puntero+52);
             almacen.writeInt(puntero+52);
             almacen.writeShort(pista);
@@ -237,9 +237,6 @@ public class Lector extends javax.swing.JFrame {
             letra.writeInt(cancion.getLetra().length());
             almacen.writeInt(0);
             letra.writeBytes(cancion.getLetra());
-        }
-        else{
-            
         }
     }
     
@@ -405,8 +402,8 @@ public class Lector extends javax.swing.JFrame {
     }//GEN-LAST:event_jFileChooser1ActionPerformed
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.setVisible(false);
-        if(canciones.isEmpty()){
-            try {
+        if(!canciones.isEmpty()){
+            try {                
                 for(int i=0; i<canciones.size();i++){
                     Escribir(canciones.get(0));
                 }
