@@ -77,8 +77,8 @@ public class Mostrar extends javax.swing.JFrame {
                     punteroAuxiliar=a.readInt();
                     a.seek(punteroAuxiliar);
                 }
+                a.skipBytes(4);
             }
-            a.skipBytes(4);
             punteroAlmacen=a.readInt();
             cancion.setPista(leerDato(indx, a.readShort(), false));
             cancion.setDisquera(leerDato(a, a.readInt(),false));
