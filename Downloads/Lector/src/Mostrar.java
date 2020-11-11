@@ -315,7 +315,7 @@ public class Mostrar extends javax.swing.JFrame {
         lista.addElement("Disquera: "+s.getDisquera());
         lista.addElement("Año:  "+s.getAnio());
         lista.addElement("Genero:   "+s.getGenero());
-        lista.addElement("Dirección:    "+s.getDireccion());
+        lista.addElement("Dirección:    "+s.getDireccion()+s.getPista()+".mp3");
         lista.addElement("Enlace del Artista:   "+s.getEnlaceArtista());
         lista.addElement("Enlace de la Disquera:   "+s.getEnlaceDisquera());
         lista.addElement("Otros Enlaces:   "+s.getEnlaceOtros());

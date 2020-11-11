@@ -2,6 +2,7 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,6 +117,8 @@ public class Buscar extends javax.swing.JFrame {
         String nombre = jTextField1.getText();
         try {
             // TODO add your handling code here:
+            ArrayList<Indices> indices=new ArrayList();
+            Indices indx=new Indices();
             RandomAccessFile almacen = new RandomAccessFile("Almacen.data","rw");
             RandomAccessFile indice = new RandomAccessFile("Indice.data","rw");
             RandomAccessFile informacion = new RandomAccessFile("Informacion.data","rw");
@@ -125,7 +128,10 @@ public class Buscar extends javax.swing.JFrame {
             int longitud=indice.readShort();
             posicion+=2;
             while(posicion!=longitud){
-                
+                indx.setNombre(indice.readShort()+"");
+                indx.setPuntero(indice.readInt());
+                indices.add(indx);
+                posicion+=6;
             }
             
             
