@@ -1,5 +1,6 @@
 
 import java.io.File;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /*
@@ -56,6 +57,11 @@ public class Inicio extends javax.swing.JFrame {
         });
 
         jButton3.setText("Buscar Pista");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,7 +104,23 @@ public class Inicio extends javax.swing.JFrame {
             Mostrar m=new Mostrar();
             m.setVisible(true);
         }
+        else{
+            JOptionPane.showMessageDialog(null, "No existen archivos aún");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        
+        File almacen = new File("Almacen.data");
+        if(almacen.exists()){
+            Buscar b=new Buscar();
+            b.setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "No existen archivos aún");
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

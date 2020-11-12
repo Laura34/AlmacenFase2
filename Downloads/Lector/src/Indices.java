@@ -11,7 +11,20 @@
 public class Indices {
     private String nombre="";
     private int puntero=-1;
+    private boolean fin;
 
+    public Indices(boolean fin) {
+        this.fin = fin;
+    }
+    
+    public boolean isFin() {
+        return fin;
+    }
+
+    public void setFin(boolean fin) {
+        this.fin = fin;
+    }
+    
     public String getNombre() {
         return nombre;
     }

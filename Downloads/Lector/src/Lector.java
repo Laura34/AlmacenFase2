@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -59,7 +58,13 @@ public class Lector extends javax.swing.JFrame {
                     String subruta = ruta+"\\"+ficheros[i];
                     File dir2 = new File(subruta);
                     Cancion nuevo = new Cancion();
-                    nuevo.setPista(ficheros[i]);
+                    String nombre=ficheros[i];
+                    String corte="";
+                    for(int x=0; x<(nombre.length()-4);x++){
+                        corte=corte+nombre.charAt(x);
+                    }
+                    nuevo.setPista(corte);
+                    corte="";
                     nuevo.setDireccion(ruta);
                     Leer(subruta, nuevo);
                     if(dir2.isDirectory()){ //Lee las carpetas dentro de la carpeta
@@ -125,8 +130,6 @@ public class Lector extends javax.swing.JFrame {
     
     public void Escribir(Cancion cancion) throws IOException{
         File archivo = new File("Almacen.data");
-        int puntero1=4;
-        short puntero2=4;
         short anio=0;
         short artista=0;
         int pista = 0;
@@ -365,7 +368,7 @@ public class Lector extends javax.swing.JFrame {
                 /*EL ARCHIVO FUE LEIDO*/
                 /*Escritura*/
                 etiqueta=BuscarInfo(tamanioA, a, "TIT2");
-                if(!etiqueta.equals("-")){
+                if(!etiqueta.equals("No Disponible")){
                     nuevo.setPista(etiqueta);
                 }
                 nuevo.setDisquera(BuscarInfo(tamanioA, a, "TPUB"));
