@@ -378,7 +378,8 @@ public class Buscar extends javax.swing.JFrame {
         boolean encontro=false;
         for(int i=0; i<indices.size();i++){
             if(indices.get(i).getNombre().equalsIgnoreCase(nombre)
-                    ||indices.get(i).getNombre().toLowerCase().contains(nombre.toLowerCase())){
+                    ||indices.get(i).getNombre().toLowerCase().contains(nombre.toLowerCase())
+                    ||indices.get(i).getNombre().contains(nombre)){
                 encontro=true;
                 if(indices.get(i).isFin()){
                    lista.addElement(indices.get(i).getNombre());
