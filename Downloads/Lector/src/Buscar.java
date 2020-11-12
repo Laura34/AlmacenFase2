@@ -382,8 +382,10 @@ public class Buscar extends javax.swing.JFrame {
                     ||indices.get(i).getNombre().contains(nombre)){
                 encontro=true;
                 if(indices.get(i).isFin()){
-                   lista.addElement(indices.get(i).getNombre());
-                   aux.add(indices.get(i));
+                    if(!aux.contains(indices.get(i))){
+                        lista.addElement(indices.get(i).getNombre());
+                        aux.add(indices.get(i));
+                    }
                 }
                 else{
                     try {
@@ -398,8 +400,10 @@ public class Buscar extends javax.swing.JFrame {
                         }
                         indx.setNombre(dato);
                         indx.setPuntero(indice.readInt());
-                        lista.addElement(indx.getNombre());
-                        aux.add(indx);
+                        if(!aux.contains(indx)){
+                            lista.addElement(indx.getNombre());
+                            aux.add(indx);
+                        }
                         dato="";
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(Buscar.class.getName()).log(Level.SEVERE, null, ex);
